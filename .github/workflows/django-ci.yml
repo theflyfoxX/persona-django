@@ -10,6 +10,18 @@ on:
 jobs:
   test:
     runs-on: ubuntu-latest
+
+    env:
+      DB_HOST: localhost
+      DB_PORT: 5432
+      DB_USER: postgres_django
+      DB_PASSWORD: root  # Ensure this matches the Docker container
+      DB_NAME: postgres_test
+      SECRET_KEY: your_secret_key
+      ALGORITHM: HS256
+      ACCESS_TOKEN_EXPIRE_MINUTES: 30
+
+
     steps:
     - name: Checkout code
       uses: actions/checkout@v3
@@ -20,7 +32,12 @@ jobs:
         python-version: "3.10"
 
     - name: Start PostgreSQL
-     
+      run: |
+        docker run --name postgres -e POSTGRES_USER=${{ env.DB_USER }} \
+          -e POSTGRES_PASSWORD=${{ env.DB_PASSWORD }} \
+          -e POSTGRES_DB=${{ env.DB_NAME }} \
+          -p 5432:5432 -d postgres:13
+        sleep 10
 
     - name: Install dependencies
       run: |
