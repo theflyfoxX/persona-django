@@ -3,7 +3,7 @@ name: Django CI
 on:
   pull_request:
     branches:
-      - main  # Change to the branch you want PRs to target (e.g., 'main', 'develop')
+      - master  # Change to the branch you want PRs to target (e.g., 'main', 'develop')
 
 jobs:
   test:
