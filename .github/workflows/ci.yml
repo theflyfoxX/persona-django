@@ -29,8 +29,14 @@ jobs:
         python -m pip install --upgrade pip  # Upgrade pip
         pip install -r requirements.txt  # Install dependencies
 
-    - name: Set up the database (if using PostgreSQL)
+    - name: Verify Django Installation
       run: |
+        source venv/bin/activate
+        python -c "import django; print(django.get_version())"
+
+    - name: Set up the database (PostgreSQL)
+      run: |
+        source venv/bin/activate
         python manage.py migrate  # Apply migrations
       env:
         DATABASE_URL: postgres://postgres:postgres@localhost:5432/postgres  # Change if needed
