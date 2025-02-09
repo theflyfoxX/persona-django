@@ -35,7 +35,7 @@ jobs:
       DB_USER: postgres
       DB_PASSWORD: root
       DB_NAME: postgres_django
-      DJANGO_SETTINGS_MODULE: settings  # 🔹 Set correct Django settings module path
+      DJANGO_SETTINGS_MODULE: settings  # 🔹 Ensure correct settings module
       DJANGO_SECRET_KEY: your_secret_key
 
     steps:
@@ -64,9 +64,9 @@ jobs:
       env:
         DATABASE_URL: postgres://postgres:root@localhost:5432/postgres_django
 
-    - name: Run tests
+    - name: Run Django Tests
       run: |
         source venv/bin/activate
-        pytest --disable-warnings
+        python manage.py test  # 🔹 Run Django's built-in test framework
       env:
-        DJANGO_SETTINGS_MODULE: settings  # 🔹 Ensure settings module is set for pytest
+        DJANGO_SETTINGS_MODULE: settings  # 🔹 Ensure settings module is set
