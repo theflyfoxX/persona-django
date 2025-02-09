@@ -1,6 +1,10 @@
 name: Django CI
 
 on:
+  push:
+    branches:
+      - main
+      - '**'
   pull_request:
     branches:
       - main  # Change to the branch you want PRs to target (e.g., 'main', 'develop')
