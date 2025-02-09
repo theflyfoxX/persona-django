@@ -7,41 +7,64 @@ on:
       - '**'
   pull_request:
     branches:
-      - main  # Ensure PRs target the correct branch
+      - main
+      - '**'
 
 jobs:
   test:
-    runs-on: ubuntu-latest  # Use the latest Ubuntu image
+    runs-on: ubuntu-latest
+
+    services:
+      postgres:
+        image: postgres:13
+        env:
+          POSTGRES_USER: postgres
+          POSTGRES_PASSWORD: root
+          POSTGRES_DB: postgres_django
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd="pg_isready -U postgres"
+          --health-interval=10s
+          --health-timeout=5s
+          --health-retries=5
+
+    env:
+      DB_HOST: localhost
+      DB_PORT: 5432
+      DB_USER: postgres
+      DB_PASSWORD: root
+      DB_NAME: postgres_django
+      DJANGO_SECRET_KEY: your_secret_key
 
     steps:
     - name: Checkout code
-      uses: actions/checkout@v3  # Updated to v3
+      uses: actions/checkout@v3
 
     - name: Set up Python
       uses: actions/setup-python@v4
       with:
-        python-version: '3.12'  # Match your local Python version
+        python-version: "3.12"
 
     - name: Install dependencies
       run: |
-        python -m venv venv  # Create a virtual environment
-        source venv/bin/activate  # Activate the virtual environment
-        python -m pip install --upgrade pip  # Upgrade pip
-        pip install -r requirements.txt  # Install dependencies
+        python -m venv venv
+        source venv/bin/activate
+        python -m pip install --upgrade pip
+        pip install -r requirements.txt
 
-    - name: Verify Django Installation
+    - name: Wait for PostgreSQL
+      run: |
+        sleep 10  # Give PostgreSQL time to start
+
+    - name: Run migrations
       run: |
         source venv/bin/activate
-        python -c "import django; print(django.get_version())"
-
-    - name: Set up the database (PostgreSQL)
-      run: |
-        source venv/bin/activate
-        python manage.py migrate  # Apply migrations
+        python manage.py migrate
       env:
-        DATABASE_URL: postgres://postgres:postgres@localhost:5432/postgres  # Change if needed
+        DATABASE_URL: postgres://postgres:root@localhost:5432/postgres_django
 
-    - name: Run tests with pytest
+    - name: Run tests
       run: |
-        source venv/bin/activate  # Ensure virtual environment is active
-        pytest  # Run Pytest for Django tests
+        source venv/bin/activate
+        pytest --disable-warnings
