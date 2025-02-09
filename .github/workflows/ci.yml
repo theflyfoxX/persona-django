@@ -35,7 +35,7 @@ jobs:
       DB_USER: postgres
       DB_PASSWORD: root
       DB_NAME: postgres_django
-      DJANGO_SETTINGS_MODULE: settings  # 🔹 Ensure correct settings module
+      DJANGO_SETTINGS_MODULE: settings  # Ensure correct settings module
       DJANGO_SECRET_KEY: your_secret_key
 
     steps:
@@ -57,16 +57,16 @@ jobs:
     - name: Wait for PostgreSQL
       run: sleep 10  # Ensure PostgreSQL is ready before running tests
 
-    - name: Run migrations
+    - name: Run database migrations on test database
       run: |
         source venv/bin/activate
-        python manage.py migrate
+        python manage.py migrate --noinput  # Apply migrations before running tests
       env:
         DATABASE_URL: postgres://postgres:root@localhost:5432/postgres_django
 
     - name: Run Django Tests
       run: |
         source venv/bin/activate
-        python manage.py test  # 🔹 Run Django's built-in test framework
+        python manage.py test  # Run Django's built-in test framework
       env:
-        DJANGO_SETTINGS_MODULE: settings  # 🔹 Ensure settings module is set
+        DJANGO_SETTINGS_MODULE: settings  # Ensure settings module is set
