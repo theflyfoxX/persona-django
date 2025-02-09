@@ -35,6 +35,7 @@ jobs:
       DB_USER: postgres
       DB_PASSWORD: root
       DB_NAME: postgres_django
+      DJANGO_SETTINGS_MODULE: settings  # 🔹 Set correct Django settings module path
       DJANGO_SECRET_KEY: your_secret_key
 
     steps:
@@ -54,8 +55,7 @@ jobs:
         pip install -r requirements.txt
 
     - name: Wait for PostgreSQL
-      run: |
-        sleep 10  # Give PostgreSQL time to start
+      run: sleep 10  # Ensure PostgreSQL is ready before running tests
 
     - name: Run migrations
       run: |
@@ -68,3 +68,5 @@ jobs:
       run: |
         source venv/bin/activate
         pytest --disable-warnings
+      env:
+        DJANGO_SETTINGS_MODULE: settings  # 🔹 Ensure settings module is set for pytest
